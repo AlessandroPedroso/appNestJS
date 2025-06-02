@@ -4,7 +4,7 @@
     > Se usa para representar quais dados e em que formatos uma determinada camada aceita e trabalha
  */
 
-import { IsNotEmpty, IsString, MinLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, MinLength } from "class-validator";
 
 //ESPERO QUE VOCÊ ME MANDE SOMENTE ISSO NO BODY
 export class CreateTaskDto {
@@ -17,4 +17,8 @@ export class CreateTaskDto {
     @MinLength(5)
     @IsNotEmpty()
     readonly description: string;
+
+    @IsNumber()
+    @IsNotEmpty()
+    readonly userId: number;
 }
