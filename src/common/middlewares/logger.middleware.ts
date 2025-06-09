@@ -11,8 +11,11 @@ export class LoggerMiddleware implements NestMiddleware {
         if (authorization) {
             req['user'] = {
                 token: authorization,
+                role: 'admin',
                 name: "FULANO TESTE"
             }
+
+            console.log(req["user"])
         }
 
         // if (authorization) {

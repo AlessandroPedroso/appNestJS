@@ -15,7 +15,7 @@ export class UsersController {
 
     @Get(':id')
     findOneUser(@Param('id', ParseIntPipe) id: number) {
-
+        console.log('Token teste: ', process.env.TOKEN_KEY)
         return this.userSerivce.findOne(id);
     }
 
