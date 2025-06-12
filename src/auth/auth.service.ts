@@ -1,8 +1,10 @@
 
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HashingServiceProtocol } from './hash/hashing.service';
+import jwtConfig from './config/jwt.config';
+import { ConfigType } from '@nestjs/config';
 
 // 1 - Verificar se o email/usuario existe
 // 2 - Verificar se a senha está correta
@@ -10,7 +12,12 @@ import { HashingServiceProtocol } from './hash/hashing.service';
 @Injectable()
 export class AuthService {
 
-    constructor(private readonly prisma: PrismaService, private readonly hashingService: HashingServiceProtocol) { }
+    constructor(private readonly prisma: PrismaService, private readonly hashingService: HashingServiceProtocol,
+        @Inject(jwtConfig.KEY)
+        private readonly jwtConfiguration: ConfigType<typeof jwtConfig>
+    ) {
+        // console.log(jwtConfiguration) //testa no console.log quando for redenrizado
+     }
 
     async authenticate(signinDto: SignInDto) {
         // console.log(signinDto);
