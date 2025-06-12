@@ -8,9 +8,13 @@ import { BodyCreateTaskInterceptor } from 'src/common/interceptors/body-create-t
 import { AddHeaderInterceptor } from 'src/common/interceptors/add-header.interceptor';
 import { AuthAdminGuard } from 'src/common/guards/admin.guards';
 import { TaskUtils } from './tasks.utils';
+import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
+import { TokenPayloadParam } from 'src/auth/param/token-payload.param';
+import { PayloadTokenDto } from 'src/auth/dto/payload-token.dto';
 @Controller('tasks')
 // @UseInterceptors(LoggerInterceptor)
-@UseGuards(AuthAdminGuard)
+// @UseGuards(AuthAdminGuard)
+@UseGuards(AuthTokenGuard)
 export class TasksController {
 
     constructor(private readonly takService: TasksService, private readonly taskUtil: TaskUtils,
@@ -33,8 +37,8 @@ export class TasksController {
     // }
 
     @Get('/list')
-    @UseInterceptors(LoggerInterceptor)
-    @UseInterceptors(AddHeaderInterceptor)
+    // @UseInterceptors(LoggerInterceptor)
+    // @UseInterceptors(AddHeaderInterceptor)
     // @UseGuards(AuthAdminGuard)
     findAllTasks(@Query() paginationDto: PaginationDto) {
         console.log(this.taskUtil.splitString('Alessandro Schuquel Pedroso'))
@@ -49,23 +53,23 @@ export class TasksController {
     }
 
     @Post()
-    @UseInterceptors(BodyCreateTaskInterceptor)
-    createTask(@Body() createTaskDto: CreateTaskDto) {
-        return this.takService.createTask(createTaskDto)
+    // @UseInterceptors(BodyCreateTaskInterceptor)
+    createTask(@Body() createTaskDto: CreateTaskDto, @TokenPayloadParam() tokenPayLoadParam: PayloadTokenDto) {
+        return this.takService.createTask(createTaskDto, tokenPayLoadParam)
     }
 
     @Patch(':id')
-    updateTask(@Param("id", ParseIntPipe) id: number, @Body() updateTaskDto: UpdateTaskDto) {
+    updateTask(@Param("id", ParseIntPipe) id: number, @Body() updateTaskDto: UpdateTaskDto, @TokenPayloadParam() tokenPayLoadParam: PayloadTokenDto) {
         // console.log("ID: ", id)
         // console.log("Body: ", body)
 
-        return this.takService.update(id, updateTaskDto)
+        return this.takService.update(id, updateTaskDto, tokenPayLoadParam)
     }
 
     @Delete(':id')
-    deleteTask(@Param("id", ParseIntPipe) id: number) {
+    deleteTask(@Param("id", ParseIntPipe) id: number, @TokenPayloadParam() tokenPayLoadParam: PayloadTokenDto) {
         // console.log("ID ENVIADO: " + id)
-        return this.takService.delete(id)
+        return this.takService.delete(id, tokenPayLoadParam)
     }
 
 }

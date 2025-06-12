@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HashingServiceProtocol } from 'src/auth/hash/hashing.service';
+import { PayloadTokenDto } from 'src/auth/dto/payload-token.dto';
 
 @Injectable()
 export class UsersService {
@@ -61,7 +62,7 @@ export class UsersService {
         }
     }
 
-    async update(id: number, updateUserDto: UpdateUserDto) {
+    async update(id: number, updateUserDto: UpdateUserDto, tokenPayload: PayloadTokenDto) {
         try {
 
             const user = await this.prisma.user.findFirst({
@@ -73,6 +74,12 @@ export class UsersService {
             if (!user) {
                 throw new HttpException('Usuário não encontrado!', HttpStatus.BAD_REQUEST)
             }
+
+            if (user.id !== tokenPayload.sub) {
+                throw new HttpException('Acesso não autorizado!', HttpStatus.BAD_REQUEST)
+            }
+
+
 
             const dataUser: { name?: string, passwordHash?: string } = {
                 name: updateUserDto.name ? updateUserDto.name : user.name,
@@ -107,7 +114,7 @@ export class UsersService {
         }
     }
 
-    async delete(id: number) {
+    async delete(id: number, tokenPayload: PayloadTokenDto) {
 
         try {
 
@@ -119,6 +126,11 @@ export class UsersService {
 
             if (!user) {
                 throw new HttpException('Usuário não encontrado!', HttpStatus.BAD_REQUEST)
+            }
+
+            if (user.id !== tokenPayload.sub) {
+                throw new HttpException('Acesso não autorizado!', HttpStatus.BAD_REQUEST)
+
             }
 
 
