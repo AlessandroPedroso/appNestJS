@@ -27,12 +27,13 @@ export class AuthService {
         //verificar se o e-mail existe
         const user = await this.prisma.user.findFirst({
             where: {
-                email: signinDto.email
+                email: signinDto.email,
+                active: true
             }
         })
 
         if (!user) {
-            throw new HttpException("Falha ao fazer o login", HttpStatus.UNAUTHORIZED)
+            throw new HttpException("Falha ao autenticar o usuário", HttpStatus.UNAUTHORIZED)
         }
 
         //validar a senha
